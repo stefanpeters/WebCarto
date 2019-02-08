@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -87,4 +88,95 @@
 <h2>the map goes above this line</h2>
 
 </body>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Opacity slider</title>
+	<!-- <link rel="stylesheet" type="text/css" href="mystyle.css"> -->
+	<!-- leaflet css -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="">
+	<!-- this is the leaflet api -->
+	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+	<!-- this is the slider scrips -->
+	<script src="./plugins/leaflet-slider-master/leaflet-slider.js"></script>
+	<link rel="stylesheet" href="./plugins/leaflet-slider-master/leaflet-slider.css">
+</head>
+
+<style type="text/css">
+	#mapid { height: 600px; width: 800px;}
+</style>
+
+<body>
+<h1>Opacity slider</h1>
+<div id="mapid" height:180px></div>
+<script>
+	var mapboxAccessToken = 'pk.eyJ1IjoiYWtlYW5lIiwiYSI6ImNqbjhtaW5wMTFnY3ozdG1qdzIzaWtzbXMifQ.uRpuBKjptoz-b4cm7akDtQ',
+		mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token='+mapboxAccessToken,
+		mapboxAttribution = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		event = '0';
+
+	var map = L.map('mapid',{
+		center: [-25.27, 133.77],
+		zoom: 4
+	});
+	var grayscale = L.tileLayer(mapboxUrl, {id: 'mapbox.light', attribution: mapboxAttribution}).addTo(map);
+	var myLayer = L.geoJSON().addTo(map);
+
+	function onEachFeature(feature, layer) {
+	    // does this feature have a property named popupContent?
+	    if (feature.properties && feature.properties.popupContent) {
+	        layer.bindPopup(feature.properties.popupContent);
+	    }
+	}
+// -----new code goes here-----
+
+
+
+	var image = L.imageOverlay('./data/historical_TopoMap_Adelaide_1898.png', [[-34.857826, 138.450236],[-34.985246, 138.749692]]).addTo(map);
+
+	function setOpacity(e){
+		var layer = e.target;
+
+		image.setStyle({
+			fillOpacity: (e*0.01)
+		}).addTo(map);
+	}
+	
+
+	newSlider = new L.control.slider(function(value) {
+		image.setStyle({
+			fillOpacity: (value*0.01)
+		}).addTo(map);
+	}, {
+		min: 0,
+		max: 100,
+		value: 100,
+		width: '300px',
+	}).addTo(map);
+
+
+	var baseMaps = {
+		"Grayscale": grayscale
+	};
+	var overlayMaps = {
+		"MyLayer": myLayer,
+		"Image": image
+	};
+	L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+
+	//----debug test-----
+	function onMapClick(e) {
+	    alert("event passed point " + event)
+	};
+	map.on('click', onMapClick);
+</script>
+
+<h2>the map goes above this line</h2>
+
+</body>
+>>>>>>> 61fa2e948928a3915927898f46e08d0cdcf1d635
 </html>
