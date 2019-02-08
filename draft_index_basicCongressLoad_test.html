@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>index_basicCongressLoad_test</title>
+	<!-- <link rel="stylesheet" type="text/css" href="mystyle.css"> -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="">
+	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+	<script src="/plugins/leaflet.shapefile-gh-pages/catiline.js"></script>
+	<script src="/plugins/leaflet.shapefile-gh-pages/leaflet.shpfile.js"></script>	
+</head>
+
+<style type="text/css">
+	#mapid { height: 600px; width: 800px;}
+</style>
+
+<body>
+<h1>index_basicCongressLoad_test</h1>
+
+	<div id="mapid"></div>
+	<script>
+		var mapboxAccessToken = 'pk.eyJ1IjoiYWtlYW5lIiwiYSI6ImNqbjhtaW5wMTFnY3ozdG1qdzIzaWtzbXMifQ.uRpuBKjptoz-b4cm7akDtQ',
+			mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token='+mapboxAccessToken,
+			m = L.map('mapid').setView([42.09618442380296, -71.5045166015625], 8);
+		var grayscale = L.tileLayer(mapboxUrl, {id: 'mapbox.light', attribution: 'angus'}).addTo(m);
+
+		var shpfile = new L.Shapefile('/plugins/leaflet.shapefile-gh-pages/congress.zip', {
+			onEachFeature: function(feature, layer) {
+				if (feature.properties) {
+					layer.bindPopup(Object.keys(feature.properties).map(function(k) {
+						return k + ": " + feature.properties[k];
+					}).join("<br />"), {
+						maxHeight: 200
+					});
+				}
+			}
+		});
+		shpfile.addTo(m);
+		// shpfile.once("data:loaded", function() {
+		// 	console.log("finished loaded shapefile");
+		// });
+	</script>
+	<!--<script>-->
+	<!--	var mapboxAccessToken = 'pk.eyJ1IjoiYWtlYW5lIiwiYSI6ImNqbjhtaW5wMTFnY3ozdG1qdzIzaWtzbXMifQ.uRpuBKjptoz-b4cm7akDtQ',-->
+	<!--		mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token='+mapboxAccessToken,-->
+	<!--		map = L.map('mapid').setView([42.09618442380296, -71.5045166015625], 8);-->
+	<!--	var grayscale = L.tileLayer(mapboxUrl, {id: 'mapbox.light', attribution: 'angus'}).addTo(map);-->
+
+	<!--	var shpfile = new L.Shapefile('congress.zip', {-->
+	<!--		onEachFeature: function(feature, layer) {-->
+	<!--			if (feature.properties) {-->
+	<!--				layer.bindPopup(Object.keys(feature.properties).map(function(k) {-->
+	<!--					return k + ": " + feature.properties[k];-->
+	<!--				}).join("<br />"), {-->
+	<!--					maxHeight: 200-->
+	<!--				});-->
+	<!--			}-->
+	<!--		}-->
+	<!--	});-->
+	<!--	shpfile.addTo(map);-->
+	
+	
+		<!--// ----Layer Control------>
+		<!--// var baseMaps = {-->
+		<!--// 	"Grayscale": grayscale-->
+		<!--// };-->
+		<!--// var overlayMaps = {-->
+		<!--// 	"congress": shpfile-->
+		<!--// };-->
+		<!--// L.control.layers(baseMaps, overlayMaps).addTo(map);-->
+	
+	
+		<!--// //----debug test------->
+		<!--// function onMapClick(e) {-->
+		<!--//     alert("event passed point " + event)-->
+		<!--// };-->
+		<!--// map.on('click', onMapClick);-->
+	<!--</script>-->
+	
+<h2>the map goes above this line</h2>
+	
+</body>
+</html>

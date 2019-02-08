@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Index</title>
+	<meta charset='utf-8' />	
+
+	<!--leaflet-->
+	<link rel="stylesheet" href="/plugins/leaflet_1_3_4/leaflet.css">
+	<script src="/plugins/leaflet_1_3_4/leaflet.js"></script>
+
+	<!--leaflet v1.0-->
+ <!--   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0/dist/leaflet.css" /> -->
+	<!--<script src="https://unpkg.com/leaflet@1.0.0/dist/leaflet.js"></script>-->
+	
+	<!--Jquery-->
+	<script type="text/javascript" src="/plugins/jquery/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="/plugins/jquery/jquery-ui.js"></script>
+	<link rel="stylesheet" href="/plugins/jquery/jquery-ui.js" type="text/css" />
+
+	<!--shapefile to geojson 1-->
+	<script src="/plugins/leaflet.shapefile-gh-pages/leaflet.shpfile.js"></script>	
+	<script src="/plugins/leaflet.shapefile-gh-pages/catiline.js"></script>
+	<script src="/plugins/leaflet.shapefile-gh-pages/shp.js"></script>	
+	
+	<!--slider-->
+	<script language="Javascript" type="text/javascript" src="/plugins/LeafletSlider-master/LeafletSlider-master/SliderControl.js"></script>
+	
+	<!--marker cluster-->
+	<!--<script src="/plugins/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster-src.js"></script>-->
+	<!--<script src="/plugins/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css"></script>-->
+	<!--<script src="/plugins/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css"></script>-->
+	<!--markercluster 2-->
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.0.6/MarkerCluster.Default.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.0.6/leaflet.markercluster-src.js"></script>
+	<!-- Load Esri Leaflet -->
+    <script src="https://unpkg.com/esri-leaflet@2.0.8"></script>
+	<style> body{padding:0;margin:0;} html,body,#map{height:100%;width:100%;}</style>
+	<!--Load GeoJSON_test file-->
+	<script type="text/javascript" src="/data/geoJsonData_test.js"></script>
+	<script type="text/javascript" src="/data/LastFire_centroids.json"></script>
+	<!--<meta charset='utf-8' />	-->
+</head>
+<style type="text/css">
+	html {
+		height: 100%;
+	}
+	body {
+		width: 100%;
+		height: 100%;
+	}
+	#panel {
+		width: 250px;
+		position: absolute;
+	}
+	#mapid { 
+		left: 255px;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+	}
+	#slidecontainer {
+		/*width: 20%;*/
+		/*margin-left: 20%;*/
+	}
+	#myRange{
+		width: 50%; /* Full-width */
+	    height: 25px; /* Specified height */
+	    background: #d3d3d3; /* Grey background */
+	    outline: none; /* Remove outline */
+	    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+	    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+	    transition: opacity .2s;
+	}
+
+	.legend {
+	    line-height: 18px;
+	    color: #555;
+	    background: #ffffff;
+	    box-shadow: 0 0 15px;
+	    outline: #000000;
+	    margin-left: 10px;
+	    padding: 8px;
+	    border-radius: 5px;
+	}
+	.legend i {
+	    width: 18px;
+	    height: 18px;
+	    float: left;
+	    margin-right: 8px;
+	    opacity: 0.8;
+	}
+	.legend h3 {
+		 margin:0px
+	}	
+	.legend h4 {
+		margin-top:0px
+	}
+</style>
+
+<body>
+<h1>basic start</h1>
+
+<div id="mapid" height:180px>
+<script>
+var output = document.getElementById("demo");
+var dec = document.getElementById("dec7");
+
+//this can be used to reload some element filters when the check box changes
+	//all elements checked at start, all layers added
+	//on check, hit myfuction
+	//if checkbox 'a' is not checked remove affected elements from map <----however how will this work with multiple criteria? we'd 
+		//need multiple layers. its better to construct and apply a new filter
+	// alt: if checkbox 'a' is notchecked/unchecked; construct new filter parameters to be applied on all layers
+// var decFilter = {};
+	
+// function decFunction (a) {
+// 	var checkbox = document.getElementById(a);
+// 	if (checkbox.checked == true) {
+// 		// alert("checkbox"+a+"checked"),
+// 		decFilter.push({
+// 			filter: function(feature) {
+// 				if (feature.properties.FIREYEAR >=output.innerHTML) return true;
+// 			}
+// 		});
+// 		// alert(decFilter)
+// 	}
+// }
+
+// Update the current slider value (each time you drag the slider handle)
+// want this to update/redraw the map
+
+
+	
+	var mapboxAccessToken = 'pk.eyJ1IjoiYWtlYW5lIiwiYSI6ImNqbjhtaW5wMTFnY3ozdG1qdzIzaWtzbXMifQ.uRpuBKjptoz-b4cm7akDtQ',
+		mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token='+mapboxAccessToken,
+		mapboxAttribution = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+
+//need a road map, terrain map, satellite map, l.grey map with labels, d.grey without labels
+	var streets = L.tileLayer(mapboxUrl, {id: 'mapbox.streets'}),
+		grayscale = L.tileLayer(mapboxUrl, {id: 'mapbox.light', attribution: mapboxAttribution}),
+		satellite = L.tileLayer(mapboxUrl, {id: 'mapbox.satellite'}),
+		terrain = L.tileLayer(mapboxUrl, {id: 'mapbox.outdoors'});
+		
+//Creating Map
+	var mymap = L.map('mapid',{
+		center: [-33.53, 136.77],
+		zoom: 7,
+		layers: [streets],
+		maxBounds: (
+			[-8, 110],
+			[-45, 170]),
+		// minZoom: 7,
+		maxZoom: 18
+	});
+		
+	
+// Creating a chorpleth coloring where d is the number of fires
+	function getColor(d) {
+	    return d > 1000 ? '#800026' :
+	           d > 800  ? '#BD0026' :
+	           d > 600  ? '#E31A1C' :
+	           d > 400  ? '#FC4E2A' :
+	           d > 300  ? '#FD8D3C' :
+	           d > 200  ? '#FEB24C' :
+	           d > 100  ? '#FED976' :
+	                      '#FFEDA0';
+	}
+	function style(feature) {
+	    return {
+	        fillColor: getColor(feature.properties.Count_),
+	        weight: 2,
+	        opacity: 1,
+	        color: 'white',
+	        dashArray: '3',
+	        fillOpacity: 0.7
+	    };
+	}
+	function onEachFeature(feature, layer) {
+			if (feature.properties) {													//if feature properties exist
+				layer.bindPopup(Object.keys(feature.properties).map(function(k) {		// "name" would be a key, "john" is a value (key value pairs)
+					return k + ": " + feature.properties[k];							//joins the keys and mapped values with a ": " inbetween, 
+				}).join("<br />"), 														//separates each iteration of "key: value" with a line br
+				{maxHeight: 200}														//sets maxheight of icon to be 200px
+				);
+			}
+		}
+	function seasonFilter(feature, layer) {
+		if (feature.properties.SEASON == 'SUMMER') {
+			
+		}
+	}
+		
+//some of these need to be split into seasons, then added into groups
+	var FireBanDist = new L.Shapefile('/data/Fire_Ban_districts.zip', {
+		onEachFeature: onEachFeature,
+		style: style
+	}).addTo(mymap);
+	var LastFireArea = new L.Shapefile('/data/LastFire_areas.zip', {
+		onEachFeature: onEachFeature
+	});
+	var LastFireCent = L.geoJson(LastFire_centroids, {
+		onEachFeature: onEachFeature
+	});
+	var markerClusters = L.markerClusterGroup();
+	markerClusters.addLayer(LastFireCent);
+
+
+// Layer control
+	var baseMaps = {
+		"Streets":streets,
+		"Terrain": terrain,
+		"Satellite": satellite,
+		"Grayscale": grayscale
+	};
+	var overlayMaps = {
+		"Fire Ban Districts": FireBanDist,
+		"Last Fire Area": LastFireArea,
+		"Last Fire Centroids": LastFireCent,
+		"Markers": markerClusters
+	};
+//Map Interactivity
+	L.control.layers(baseMaps, overlayMaps).addTo(mymap);
+	L.control.scale().addTo(mymap);
+// Legend
+	var legend = L.control({position: 'bottomright'});
+		legend.onAdd = function (map) {
+		    var div = L.DomUtil.create('div', 'info legend'),
+		        grades = [0, 100, 200, 300, 400, 600, 800, 1000],
+		        labels = [];
+			div.innerHTML += '<h3>Legend</h3> <h4>Fire Counts</h4>';
+		    // loop through our density intervals and generate a label with a colored square for each interval
+		    for (var i = 0; i < grades.length; i++) {
+		        div.innerHTML +=
+		            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+		            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+		    }
+		    return div;
+		};
+	legend.addTo(mymap);
+	
+
+	
+
+
+//Slider
+	// var sliderControl = L.control.sliderControl({position: "bottomleft", layer: LastFireCent});
+	// //Make sure to add the slider to the map ;-)
+	// mymap.addControl(sliderControl);
+	// sliderControl.startSlider();
+	
+	
+
+</script>
+</div>
+
+<h2>the map goes above this line</h2>
+
+</body>
+</html>
